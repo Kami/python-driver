@@ -1,3 +1,5 @@
+import os
+
 try:
     import unittest2 as unittest
 except ImportError:
@@ -8,7 +10,7 @@ from cassandra.metadata import TableMetadata, Token, MD5Token, TokenMap
 from cassandra.policies import SimpleConvictionPolicy
 from cassandra.pool import Host
 
-from tests.integration import get_cluster
+from tests.integration.ccm import get_cluster
 
 class SchemaMetadataTest(unittest.TestCase):
 
@@ -279,6 +281,10 @@ class TokenMetadataTest(unittest.TestCase):
     """
 
     def test_token(self):
+        if os.getenv('TRAVIS', None):
+            # Ths Test is skipped on Travis since Travis it doesn't use CCM
+            return
+
         expected_node_count = len(get_cluster().nodes)
 
         cluster = Cluster()
